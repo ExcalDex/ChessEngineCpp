@@ -29,7 +29,7 @@ struct Piece
 // The code uses {8, 8} as default for invalid or null coordinates.
 struct Coord
 {
-    unsigned int row = 0, col = 0;
+    int row = 0, col = 0;
 };
 
 struct GameState
@@ -46,7 +46,7 @@ struct SnapShot
 };
 
 static bool isValidCoord(Coord c) {
-  return c.row <= 7 && c.col <= 7;
+  return c.row <= 7 && c.col <= 7 && c.row >= 0 && c.col >= 0;
 }
 
 inline bool operator==(const Coord& a, const Coord& b) {
