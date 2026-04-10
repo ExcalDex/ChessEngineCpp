@@ -35,7 +35,9 @@ struct Coord
 struct GameState
 {
     Color turn;
-    bool castling[2][2] = {{true, true}, {true, true}}; // [color: 0 - white, 1 - black][id]
+    // [id: 0 - 1, 1 - 2][color: 0 - white, 1 - black]
+    // id 1: Queen Side, id 2: King Side
+    bool castling[2][2] = {{true, true}, {true, true}};
     Coord enPassant;
 };
 
@@ -45,7 +47,7 @@ struct SnapShot
     GameState state;
 };
 
-static bool isValidCoord(Coord c) {
+inline bool isValidCoord(Coord c) {
   return c.row <= 7 && c.col <= 7 && c.row >= 0 && c.col >= 0;
 }
 
