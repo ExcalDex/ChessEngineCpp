@@ -9,9 +9,7 @@ public:
     // Sets board and game state
     Game();
 
-    // Execute a move on the board. ASSUMES move has been validated by caller.
-    // Does not check legality or if move leaves king in check.
-    bool move(Coord from, Coord to);
+    bool makeMove(Coord from, Coord to);
 
     // Returns an array of all possible moves the piece can make from the given position.
     // Possible moves are the ones that follow chess rules and do not result on checks of oneself's king.
@@ -24,9 +22,6 @@ public:
     // Calculates if the pieces of the matching `c` color have any possible moves.
     // Returns true if any move is found, false if not.
     bool hasMoves(Color c);
-
-    // Returns a SnapShot of the board and game state.
-    SnapShot getGame();
 
     // Reverts the board to its previous state in history.
     void undo();
@@ -66,9 +61,13 @@ private:
     // Does not consider self king checks on the calculations.
     std::array<Coord, 27> kingMoves(Coord piece);
 
+    // Execute a move on the board. ASSUMES move has been validated by caller.
+    // Does not check legality or if move leaves king in check.
+    bool move(Coord from, Coord to);
+
     // Calculates if the square in the coordinate sq is being attacked by a piece of the specified color.
     bool isControlledBy(Coord sq, Color attacker);
 
-    // Tests if the move will result in a check on self king.
-    bool willEnterCheck(Coord from, Coord to);
+    // Returns true when move results in a check to the self king
+    bool testForCheck(Coord from, Coord to);
 };

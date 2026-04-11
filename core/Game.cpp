@@ -444,7 +444,6 @@ bool Game::isControlledBy(Coord sq, Color attacker)
 
 bool Game::move(Coord from, Coord to)
 {
-    setHistory();
     Piece movingPiece = board.getPiece(from);
 
     // Making sure all arguments are valid
@@ -456,7 +455,7 @@ bool Game::move(Coord from, Coord to)
         // Updating last en passant coordinates
         if (to == Coord{from.row + 2, from.col} || to == Coord{from.row - 2, from.col})
         {
-            if(movingPiece.c == Color::BLACK)
+            if (movingPiece.c == Color::BLACK)
                 gameState.enPassant = Coord{from.row - 1, from.col};
             else
                 gameState.enPassant = Coord{from.row + 1, from.col};
@@ -518,13 +517,141 @@ bool Game::move(Coord from, Coord to)
     board.setPiece(from, Piece{PieceType::BLANK, Color::BLACK, 'b'});
 
     // Fixing king tracking
-    if(movingPiece.t == PieceType::KING)
+    if (movingPiece.t == PieceType::KING)
     {
-        if(movingPiece.c == Color::BLACK)
+        if (movingPiece.c == Color::BLACK)
             blackKing = to;
         else
             whiteKing = to;
     }
 
     return true;
+}
+
+void Game::setHistory()
+{
+    SnapShot snap;
+    snap.board = board.snapshot();
+    snap.state = gameState;
+    history.push(snap);
+}
+
+void Game::undo()
+{
+    SnapShot lastMove = history.top();
+    history.pop();
+    gameState = lastMove.state;
+    board.setMatrix(lastMove.board);
+}
+
+bool Game::isKingInCheck(Color c)
+{
+    if (c == Color::BLACK)
+        return isControlledBy(blackKing, Color::WHITE);
+    else
+        return isControlledBy(whiteKing, Color::BLACK);
+}
+
+std::array<Coord, 27> Game::possibleMoves(Coord piece)
+{
+    std::array<Coord, 27> arr;
+
+    // Setting sentinel values - Remember to check
+    for (int i = 0; i < 27; i++)
+        arr[i] = Coord{8, 8};
+
+    Piece p = board.getPiece(piece);
+
+    switch (p.t)
+    {
+    case PieceType::PAWN:
+        arr = pawnMoves(piece);
+        break;
+
+    case PieceType::ROOK:
+        arr = rookMoves(piece);
+        break;
+
+    case PieceType::KNIGHT:
+        arr = knightMoves(piece);
+        break;
+
+    case PieceType::BISHOP:
+        arr = bishopMoves(piece);
+        break;
+
+    case PieceType::QUEEN:
+        arr = queenMoves(piece);
+        break;
+
+    case PieceType::KING:
+        arr = kingMoves(piece);
+        break;
+
+    default:
+        break;
+    }
+
+    std::array<Coord, 27> possible;
+    // Setting sentinel values - Remember to check
+    for (int i = 0; i < 27; i++)
+        possible[i] = Coord{8, 8};
+
+    int k = 0;
+    for (int i = 0; i < 27; i++)
+    {
+        if (arr[i] == Coord{8, 8})
+            break;
+
+        move(piece, arr[i]);
+        if (!isKingInCheck(p.c))
+        {
+            possible[k] = arr[i];
+            k++;
+        }
+        undo();
+    }
+
+    return possible;
+}
+
+bool Game::hasMoves(Color c)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.getPiece(Coord{i, j}).c == c && board.getPiece(Coord{i, j}).t != PieceType::BLANK)
+            {
+                if (possibleMoves(Coord{i, j})[0] != Coord{8, 8})
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Game::testForCheck(Coord from, Coord to)
+{
+    SnapShot snap;
+    snap.board = board.snapshot();
+    snap.state = gameState;
+
+    Piece movingPiece = board.getPiece(from);
+
+    move(from, to);
+
+    bool check = isKingInCheck(movingPiece.c);
+
+    board.setMatrix(snap.board);
+    gameState = snap.state;
+
+    return check;
+}
+
+bool Game::makeMove(Coord from, Coord to)
+{
+    setHistory();
+    return move(from, to);
 }
