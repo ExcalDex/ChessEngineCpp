@@ -98,10 +98,15 @@ std::array<Coord, 27> Game::pawnMoves(Coord p)
             if (moves[i][1] == 1 || moves[i][1] == -1)
             {
                 if ((board.getPiece(currentMove).c != pawn.c &&
-                     board.getPiece(currentMove).t != PieceType::BLANK) ||
-                    // En passant check, making sure it is only allowed when the space is blank and when it is the piece's turn (to avoid misscalculations in finding the control areas)
-                    (gameState.enPassant == currentMove &&
-                     board.getPiece(currentMove).t != PieceType::BLANK &&
+                     board.getPiece(currentMove).t != PieceType::BLANK))
+
+                {
+                    arr[k] = currentMove;
+                    k++;
+                }
+                // En passant check, making sure it is only allowed when the space is blank and when it is the piece's turn (to avoid misscalculations in finding the control areas)
+                if ((gameState.enPassant == currentMove &&
+                     board.getPiece(currentMove).t == PieceType::BLANK &&
                      gameState.turn == pawn.c))
                 {
                     arr[k] = currentMove;
@@ -471,9 +476,9 @@ bool Game::move(Coord from, Coord to)
         if (to == Coord{from.row + 2, from.col} || to == Coord{from.row - 2, from.col})
         {
             if (movingPiece.c == Color::BLACK)
-                gameState.enPassant = Coord{from.row - 1, from.col};
-            else
                 gameState.enPassant = Coord{from.row + 1, from.col};
+            else
+                gameState.enPassant = Coord{from.row - 1, from.col};
         }
         else
         {
@@ -577,7 +582,7 @@ std::array<Coord, 27> Game::possibleMoves(Coord piece)
 
     Piece p = board.getPiece(piece);
 
-    if(p.c != gameState.turn)
+    if (p.c != gameState.turn)
         return arr;
 
     // Finding possible moves without checking for validity

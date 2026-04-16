@@ -33,11 +33,26 @@ int main()
             ui.println("Where do you want to move it to?");
             ui.printMoves(posb);
             Coord to;
+            bool isPossible = false;
             do
             {
                 input = ui.getInput();
                 to = ui.translateCoordinates(input);
-            } while (!isValidCoord(to));
+                if (isValidCoord(to))
+                {
+                    for (int i = 0; i < 27; i++)
+                    {
+                        if (posb[i] != Coord{8, 8})
+                        {
+                            if (to == posb[i])
+                            {
+                                isPossible = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } while (!isPossible);
 
             g.makeMove(pieceCoord, to);
             g.changeTurn();
