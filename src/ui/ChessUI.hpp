@@ -20,7 +20,7 @@ public:
     // Wrapper for a simple cout statement with an endl.
     void println(std::string s) const;
     // Prints all possible moves inside a Coord[27] array.
-    void printMoves(std::array<Coord, 27> posb) const;
+    void printMoves(const std::array<Coord, 27> &posb) const;
     // Clear Screen.
     void cls() const;
 

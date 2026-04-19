@@ -15,7 +15,7 @@ public:
     std::array<std::array<Piece, 8>, 8> snapshot() const;
 
     // Sets matrix values.
-    void setMatrix(std::array<std::array<Piece, 8>, 8> newMatrix);
+    void setMatrix(const std::array<std::array<Piece, 8>, 8> &newMatrix);
 
     // Returns piece at the given position.
     Piece getPiece(Coord at) const;

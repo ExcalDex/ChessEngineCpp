@@ -8,9 +8,9 @@ void ChessUI::printBoard(const Board &b, Color orientation) const
     for (int i = 0; i < 8; i++)
     {
         // Offsets the row rendering based on the orientation color
-        int row = orientation == Color::WHITE ? i : (7 - i);
+        const int row = orientation == Color::WHITE ? i : (7 - i);
         // Printing the number of the row, to help the user find the coordinates
-        int numberOfRow = orientation == Color::WHITE ? (7 - i) : i;
+        const int numberOfRow = orientation == Color::WHITE ? (7 - i) : i;
         std::cout << numberOfRow + 1 << " ";
         for (int j = 0; j < 8; j++)
         {
@@ -184,7 +184,7 @@ void ChessUI::println(std::string s) const
 
 std::string ChessUI::convertCoordToText(Coord c) const
 {
-    std::string coordText = "";
+    std::string coordText;
     if (isValidCoord(c))
     {
         coordText += static_cast<char>(c.col + 'a');
@@ -193,7 +193,7 @@ std::string ChessUI::convertCoordToText(Coord c) const
     return coordText;
 }
 
-void ChessUI::printMoves(std::array<Coord, 27> posb) const
+void ChessUI::printMoves(const std::array<Coord, 27> &posb) const
 {
     std::cout << "Possible moves: ";
     for (int i = 0; i < 27; i++)
@@ -213,5 +213,5 @@ void ChessUI::printMoves(std::array<Coord, 27> posb) const
 
 void ChessUI::cls() const
 {
-    system("clear");
+    system("cls");
 }

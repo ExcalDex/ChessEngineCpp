@@ -35,7 +35,7 @@ struct Coord
 
 struct GameState
 {
-    Color turn;
+    Color turn = Color::BLACK;
     // [id: 0 = 1, 1 = 2][color: 0 = white, 1 = black]
     // id 1: Queen Side, id 2: King Side
     bool castling[2][2] = {{true, true}, {true, true}};

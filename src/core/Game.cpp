@@ -65,7 +65,7 @@ void Game::changeTurn()
     gameState.turn = gameState.turn == Color::BLACK ? Color::WHITE : Color::BLACK;
 }
 
-std::array<Coord, 27> Game::pawnMoves(Coord p)
+std::array<Coord, 27> Game::pawnMoves(const Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -148,7 +148,7 @@ std::array<Coord, 27> Game::pawnMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::knightMoves(Coord p)
+std::array<Coord, 27> Game::knightMoves(const Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -180,7 +180,7 @@ std::array<Coord, 27> Game::knightMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::rookMoves(Coord p)
+std::array<Coord, 27> Game::rookMoves(const Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -223,11 +223,11 @@ std::array<Coord, 27> Game::rookMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::bishopMoves(Coord p)
+std::array<Coord, 27> Game::bishopMoves(const Coord p) const
 {
     std::array<Coord, 27> arr;
 
-    // Setting sentinel values - Remember to checks
+    // Setting sentinel values - Remember to check
     for (int i = 0; i < 27; i++)
         arr[i] = Coord{8, 8};
 
@@ -266,7 +266,7 @@ std::array<Coord, 27> Game::bishopMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::queenMoves(Coord p)
+std::array<Coord, 27> Game::queenMoves(const Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -300,7 +300,7 @@ std::array<Coord, 27> Game::queenMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::kingMoves(Coord p)
+std::array<Coord, 27> Game::kingMoves(const Coord p)
 {
     std::array<Coord, 27> arr;
 
@@ -382,7 +382,7 @@ std::array<Coord, 27> Game::kingMoves(Coord p)
     return arr;
 }
 
-bool Game::isControlledBy(Coord sq, Color attacker)
+bool Game::isControlledBy(const Coord sq, const Color attacker) const
 {
     // Check for Knights
     int knightMoves[8][2] = {{-2, 1}, {-2, -1}, {2, 1}, {2, -1}, {1, -2}, {1, 2}, {-1, -2}, {-1, 2}};
@@ -563,12 +563,10 @@ void Game::setHistory()
     history.push(snap);
 }
 
-void Game::undo()
+void Game::revertState(const SnapShot &snap)
 {
-    SnapShot lastMove = history.top();
-    history.pop();
-    gameState = lastMove.state;
-    board.setMatrix(lastMove.board);
+    gameState = snap.state;
+    board.setMatrix(snap.board);
 }
 
 bool Game::isKingInCheck(Color c)

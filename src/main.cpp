@@ -17,13 +17,12 @@ int main()
         {
             ui.println("What piece do you want to move?");
             std::string input;
-            Piece piece;
             Coord pieceCoord = {8, 8};
             std::array<Coord, 27> posb;
             do
             {
                 input = ui.getInput();
-                piece = ui.translatePiece(input);
+                Piece piece = ui.translatePiece(input);
                 if (piece.t != PieceType::ERROR)
                 {
                     pieceCoord = g.getBoard().getCoordinates(piece);
