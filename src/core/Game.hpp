@@ -19,16 +19,6 @@ public:
     // Invert the turn;
     void changeTurn();
 
-    std::array<Coord, 27> pawnMoves(Coord p) const;
-
-    std::array<Coord, 27> knightMoves(Coord p) const;
-
-    std::array<Coord, 27> rookMoves(Coord p) const;
-
-    std::array<Coord, 27> bishopMoves(Coord p) const;
-
-    std::array<Coord, 27> queenMoves(Coord p) const;
-
     // Validates and makes the move, returning true if the move was done and false if the move was illegal and couldn't be done.
     // Also saves the last board state in the history.
     bool makeMove(Coord from, Coord to);
@@ -46,7 +36,7 @@ public:
     bool hasMoves(Color c);
 
     // Reverts the board to its previous state in history.
-    void revertState(const SnapShot &snap);
+    void revertState(SnapShot &snap);
 
 private:
     std::stack<SnapShot> history;
@@ -82,8 +72,6 @@ private:
     // Returns an array of possible king moves of the given piece.
     // Does not consider self king checks on the calculations.
     std::array<Coord, 27> kingMoves(Coord piece);
-
-    bool isControlledBy(Coord sq, Color attacker) const;
 
     // Execute a move on the board. ASSUMES move has been validated by caller.
     // Does not check legality or if move leaves king in check.
