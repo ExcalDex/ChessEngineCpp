@@ -14,13 +14,10 @@ public:
     Game();
 
     // Returns a copy of the board.
-    Board getBoard();
+    Board getBoard() const;
 
     // Returns a copy of the turn color.
-    Color getTurn();
-
-    // Invert the turn;
-    void changeTurn();
+    Color getTurn() const;
 
     // Validates and makes the move, returning true if the move was done and false if the move was illegal and couldn't be done.
     // Also saves the last board state in the history.
@@ -51,6 +48,9 @@ public:
     // Reverts the board and game states to the SnapShot's.
     void revertState(const SnapShot &snap);
 
+    // Returns a SnapShot of current board and game states.
+    SnapShot getSnap() const;
+
 private:
     std::stack<SnapShot> history;
     Board board;
@@ -65,27 +65,27 @@ private:
     // Returns an array of possible pawn moves of the given piece.
     // Does not consider self king checks on the calculations.
     // May return an emtpy array if the given coordinates aren't of a pawn.
-    std::array<Coord, 27> pawnMoves(Coord piece);
+    std::array<Coord, 27> pawnMoves(Coord piece) const;
 
     // Returns an array of possible rook moves of the given piece.
     // Does not consider self king checks on the calculations.
     // May return an emtpy array if the given coordinates aren't of a rook.
-    std::array<Coord, 27> rookMoves(Coord piece);
+    std::array<Coord, 27> rookMoves(Coord piece) const;
 
     // Returns an array of possible knight moves of the given piece.
     // Does not consider self king checks on the calculations.
     // May return an emtpy array if the given coordinates aren't of a knight.
-    std::array<Coord, 27> knightMoves(Coord piece);
+    std::array<Coord, 27> knightMoves(Coord piece) const;
 
     // Returns an array of possible bishop moves of the given piece.
     // Does not consider self king checks on the calculations.
     // May return an emtpy array if the given coordinates aren't of a bishop.
-    std::array<Coord, 27> bishopMoves(Coord piece);
+    std::array<Coord, 27> bishopMoves(Coord piece) const;
 
     // Returns an array of possible queen moves of the given piece.
     // Does not consider self king checks on the calculations.
     // May return an emtpy array if the given coordinates aren't of a queen.
-    std::array<Coord, 27> queenMoves(Coord piece);
+    std::array<Coord, 27> queenMoves(Coord piece) const;
 
     // Returns an array of possible king moves of the given piece.
     // Does not consider self king checks on the calculations.
@@ -95,6 +95,9 @@ private:
     // Execute a move on the board. ASSUMES move has been validated by caller.
     // Does not check legality or if move leaves king in check.
     bool move(Coord from, Coord to);
+
+    // Invert the turn.
+    void changeTurn();
 
     // Calculates if the square in the coordinate sq is being attacked by a piece of the specified color.
     bool isControlledBy(Coord sq, Color attacker);

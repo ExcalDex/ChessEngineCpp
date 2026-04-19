@@ -50,12 +50,12 @@ Game::Game()
     board.setMatrix(matrix);
 }
 
-Board Game::getBoard()
+Board Game::getBoard() const
 {
     return board;
 }
 
-Color Game::getTurn()
+Color Game::getTurn() const
 {
     return gameState.turn;
 }
@@ -65,7 +65,7 @@ void Game::changeTurn()
     gameState.turn = gameState.turn == Color::BLACK ? Color::WHITE : Color::BLACK;
 }
 
-std::array<Coord, 27> Game::pawnMoves(Coord p)
+std::array<Coord, 27> Game::pawnMoves(Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -147,7 +147,7 @@ std::array<Coord, 27> Game::pawnMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::knightMoves(Coord p)
+std::array<Coord, 27> Game::knightMoves(Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -180,7 +180,7 @@ std::array<Coord, 27> Game::knightMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::rookMoves(Coord p)
+std::array<Coord, 27> Game::rookMoves(Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -224,7 +224,7 @@ std::array<Coord, 27> Game::rookMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::bishopMoves(Coord p)
+std::array<Coord, 27> Game::bishopMoves(Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -268,7 +268,7 @@ std::array<Coord, 27> Game::bishopMoves(Coord p)
     return arr;
 }
 
-std::array<Coord, 27> Game::queenMoves(Coord p)
+std::array<Coord, 27> Game::queenMoves(Coord p) const
 {
     std::array<Coord, 27> arr;
 
@@ -557,6 +557,7 @@ bool Game::move(Coord from, Coord to)
             whiteKing = to;
     }
 
+    changeTurn();
     return true;
 }
 
@@ -699,4 +700,9 @@ void Game::undo()
 
     board.setMatrix(snap.board);
     gameState = snap.state;
+}
+
+SnapShot Game::getSnap() const
+{
+    return SnapShot{board.snapshot(), gameState};
 }

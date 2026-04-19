@@ -2,12 +2,14 @@
 #include "core/Board.hpp"
 #include "core/Common.hpp"
 #include "ui/ChessUI.hpp"
+#include "core/Engine.hpp"
 #include <array>
 
 int main()
 {
     Game g;
     ChessUI ui;
+    Engine engine(Color::BLACK);
     bool running = true;
     while (running)
     {
@@ -15,50 +17,57 @@ int main()
         ui.printBoard(g.getBoard(), g.getTurn());
         if (g.hasMoves(g.getTurn()))
         {
-            ui.println("What piece do you want to move?");
-            std::string input;
-            Coord pieceCoord = {8, 8};
-            std::array<Coord, 27> posb;
-            do
+            if (g.getTurn() == Color::BLACK)
             {
-                input = ui.getInput();
-                Piece piece = ui.translatePiece(input);
-                if (piece.t != PieceType::ERROR)
-                {
-                    pieceCoord = g.getBoard().getCoordinates(piece);
-                    posb = g.possibleMoves(pieceCoord);
-                }
-            } while (!isValidCoord(posb[0]));
-            ui.println("Where do you want to move it to?");
-            ui.printMoves(posb);
-            Coord to;
-            bool isPossible = false;
-            do
+                std::array<Coord, 2> bestMove = engine.getBestMove(g);
+                g.makeMove(bestMove[0], bestMove[1]);
+            }
+            else
             {
-                input = ui.getInput();
-                to = ui.translateCoordinates(input);
-                if (isValidCoord(to))
+                ui.println("What piece do you want to move?");
+                std::string input;
+                Coord pieceCoord = {8, 8};
+                std::array<Coord, 27> posb;
+                do
                 {
-                    for (int i = 0; i < 27; i++)
+                    input = ui.getInput();
+                    Piece piece = ui.translatePiece(input);
+                    if (piece.t != PieceType::ERROR)
                     {
-                        if (posb[i] != Coord{8, 8})
+                        pieceCoord = g.getBoard().getCoordinates(piece);
+                        posb = g.possibleMoves(pieceCoord);
+                    }
+                } while (!isValidCoord(posb[0]));
+                ui.println("Where do you want to move it to?");
+                ui.printMoves(posb);
+                Coord to;
+                bool isPossible = false;
+                do
+                {
+                    input = ui.getInput();
+                    to = ui.translateCoordinates(input);
+                    if (isValidCoord(to))
+                    {
+                        for (int i = 0; i < 27; i++)
                         {
-                            if (to == posb[i])
+                            if (posb[i] != Coord{8, 8})
                             {
-                                isPossible = true;
+                                if (to == posb[i])
+                                {
+                                    isPossible = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
                                 break;
                             }
                         }
-                        else
-                        {
-                            break;
-                        }
                     }
-                }
-            } while (!isPossible);
+                } while (!isPossible);
 
-            g.makeMove(pieceCoord, to);
-            g.changeTurn();
+                g.makeMove(pieceCoord, to);
+            }
         }
         else
         {
