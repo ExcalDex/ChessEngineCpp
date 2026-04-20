@@ -210,8 +210,3 @@ void ChessUI::printMoves(const std::array<Coord, 27> &posb) const
         }
     }
 }
-
-void ChessUI::cls() const
-{
-    system("cls");
-}

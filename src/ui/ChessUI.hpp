@@ -30,9 +30,6 @@ public:
     // Prints all possible moves inside a Coord[27] array.
     void printMoves(const std::array<Coord, 27> &posb) const;
 
-    // Clear Screen.
-    void cls() const;
-
 private:
     // Converts a coordinate into algebraic chess form.
     // Returns an empty string if the given coordinates are invalid.
