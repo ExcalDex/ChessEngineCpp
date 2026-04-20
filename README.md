@@ -23,7 +23,7 @@ A C++ chess engine featuring a fully functional game implementation with AI oppo
 ### Build Instructions
 
 ```bash
-git clone https://github.com/agomesdev/ChessEngineCpp.git
+git clone https://github.com/andresgcsdev/ChessEngineCpp.git
 cd ChessEngineCpp
 cmake -B build
 cmake --build build
