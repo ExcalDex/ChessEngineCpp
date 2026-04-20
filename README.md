@@ -87,13 +87,13 @@ Run the executable and follow the on-screen prompts:
 
 This is my fifth chess implementation, and the first one I'm fully satisfied with architecturally.
 
-It started in 2021 with a ~3000 line implementation in VisuAlg (a Portuguese pseudocode language) during the first year of technical school — built purely because the coursework got too easy. That version is lost.
+It started in 2022 with a ~3000 line implementation in VisuAlg (a Portuguese pseudocode language) during the first year of technical school — built purely because the coursework got too easy. That version is lost.
 
-From there came a JavaScript web implementation during the second year, featuring a partially functional AI called `PeacockBass` — the name has no official explanation. It was abandoned due to JavaScript's performance limits and a bug in the capture evaluation that took too long to track down. The code is still on GitHub if you're curious.
+From there came a JavaScript web implementation during the second year, featuring a partially functional AI called `PeacockBass` — the name is a joke one related to stockfish, I found the portuguese name funny at the time. It was abandoned due to JavaScript's performance limits and a bug in the capture evaluation that took too long to track down. The code is still on GitHub if you're curious.
 
 Then a first C++ version, functional but without proper architecture. Then implementations in Java, Rust, and others — each one using chess as a benchmark for learning a new language. The same problem, different constraints, different lessons each time.
 
-This version is the result of all of that. Same problem, finally done right.
+This version is the result of all of that. Same problem, finally complete.
 
 ---
 
@@ -109,11 +109,7 @@ This version is the result of all of that. Same problem, finally done right.
 ## Future Improvements
 
 - Alpha-beta pruning for faster search
-- Transposition table to cache evaluated positions
-- Move ordering heuristics to improve pruning efficiency
-- Opening book
 - Endgame tablebases
-- Perft testing for move generation verification
 - Python test suite for automated position validation
 
 ---
