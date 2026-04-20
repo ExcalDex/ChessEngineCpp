@@ -14,7 +14,6 @@ int main()
     while (running)
     {
         // ui.cls(); Uncomment before pushing! (Commented because CLion terminal does not support it very well)
-        ui.printBoard(g.getBoard(), g.getTurn());
         if (g.hasMoves(g.getTurn()))
         {
             if (g.getTurn() == Color::BLACK)
@@ -24,6 +23,7 @@ int main()
             }
             else
             {
+                ui.printBoard(g.getBoard(), g.getTurn());
                 ui.println("What piece do you want to move?");
                 std::string input;
                 Coord pieceCoord = {8, 8};
@@ -71,6 +71,7 @@ int main()
         }
         else
         {
+            ui.printBoard(g.getBoard(), g.getTurn());
             if (g.isKingInCheck(g.getTurn()))
             {
                 std::string pieceWin = g.getTurn() == Color::WHITE ? "Black" : "White";

@@ -145,7 +145,7 @@ int Engine::evaluate(Game &game) const
             if (p.t == PieceType::BLANK)
                 continue;
             int val = 0;
-            int fixedRow = p.c == Color::WHITE ? row : 7 - row;
+            int fixedRow = p.c == Color::WHITE ? 7 - row: row;
             switch (p.t)
             {
                 case PieceType::PAWN:

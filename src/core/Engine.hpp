@@ -20,19 +20,19 @@ public:
     std::array<Coord, 2> getBestMove(Game game);
 
 private:
-    static constexpr int SEARCH_DEPTH = 3;
+    static constexpr int SEARCH_DEPTH = 2;
     Color selfColor;
     // All position value tables
     // Pawn
     static constexpr int pawnTable[8][8] = {
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {50, 50, 50, 50, 50, 50, 50, 50},
-            {10, 10, 20, 30, 30, 20, 10, 10},
-            {5, 5, 10, 25, 25, 10, 5, 5},
-            {0, 0, 0, 20, 20, 0, 0, 0},
-            {5, -5, -10, 0, 0, -10, -5, 5},
-            {5, 10, 10, -20, -20, 10, 10, 5},
-            {0, 0, 0, 0, 0, 0, 0, 0}
+            {0, 0, 0, 0, 0, 0, 0, 0}, // Rank 1
+            {5, 5, 5, 5, 5, 5, 5, 5}, // Rank 2
+            {10, 10, 10, 10, 10, 10, 10, 10}, // Rank 3
+            {20, 20, 25, 30, 30, 25, 20, 20}, // Rank 4
+            {30, 30, 35, 40, 40, 35, 30, 30}, // Rank 5
+            {50, 50, 55, 60, 60, 55, 50, 50}, // Rank 6
+            {100, 100, 100, 100, 100, 100, 100, 100}, // Rank 7 (close to promotion!)
+            {0, 0, 0, 0, 0, 0, 0, 0} // Rank 8 (promote)
             };
 
     // Knight
