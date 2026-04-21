@@ -18,7 +18,7 @@ int main()
     while (running)
     {
         // Looking for checkmate or stalemate.
-        if (g.hasMoves(g.getTurn()))
+        if (g.hasMoves(g.getTurn()) && !g.staleMateByMaterial())
         {
             // Change this color value to WHITE to play as black.
             if (g.getTurn() == Color::BLACK)

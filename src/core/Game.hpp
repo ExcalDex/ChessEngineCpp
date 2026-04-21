@@ -54,6 +54,9 @@ public:
     // Returns a copy of the current game history.
     std::stack<SnapShot> getHistory() const;
 
+    // Returns true when there are only kings on the board.
+    bool staleMateByMaterial() const;
+
 private:
     std::stack<SnapShot> history;
     Board board;

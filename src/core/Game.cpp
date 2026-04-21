@@ -712,3 +712,17 @@ std::stack<SnapShot> Game::getHistory() const
     return history;
 }
 
+bool Game::staleMateByMaterial() const
+{
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.getPiece(Coord{i, j}).t != PieceType::BLANK && board.getPiece(Coord{i, j}).t != PieceType::KING)
+                return true;
+        }
+    }
+
+    return false;
+}
+
