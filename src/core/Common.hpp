@@ -30,12 +30,12 @@ struct Piece
 // The code uses {8, 8} as default for invalid or null coordinates.
 struct Coord
 {
-    int row = 0, col = 0;
+    int row = 8, col = 8;
 };
 
 struct GameState
 {
-    Color turn = Color::BLACK;
+    Color turn = Color::WHITE;
     // [id: 0 = 1, 1 = 2][color: 0 = white, 1 = black]
     // id 1: Queen Side, id 2: King Side
     bool castling[2][2] = {{true, true}, {true, true}};

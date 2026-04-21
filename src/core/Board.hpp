@@ -15,6 +15,7 @@ public:
     std::array<std::array<Piece, 8>, 8> snapshot() const;
 
     // Sets matrix values.
+    // This method will ignore any movement logic for the previous pieces. It's the caller's responsibility to track that logic if using this method.
     void setMatrix(const std::array<std::array<Piece, 8>, 8> &newMatrix);
 
     // Returns piece at the given position.

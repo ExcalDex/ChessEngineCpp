@@ -8,75 +8,18 @@ void ChessUI::printBoard(const Board &b, Color orientation) const
 {
     for (int i = 0; i < 8; i++)
     {
-        // Offsets the row rendering based on the orientation color
+        // Offsets the row rendering based on the orientation color.
         const int row = orientation == Color::WHITE ? i : (7 - i);
-        // Printing the number of the row, to help the user find the coordinates
+        // Printing the number of the row, to help the user find the coordinates.
         const int numberOfRow = orientation == Color::WHITE ? (7 - i) : i;
         std::cout << numberOfRow + 1 << " ";
         for (int j = 0; j < 8; j++)
         {
-            // Offsets the collumn rendering based on the orientation color
+            // Offsets the column rendering based on the orientation color.
             int col = orientation == Color::WHITE ? j : (7 - j);
+
             Piece p = b.getPiece({row, col});
-            std::string piecePrint;
-            switch (p.c)
-            {
-                case Color::WHITE:
-                    piecePrint.append("W");
-                    break;
-
-                case Color::BLACK:
-                    piecePrint.append("B");
-                    break;
-
-                default:
-                    break;
-            }
-
-            switch (p.t)
-            {
-                case PieceType::PAWN:
-                    piecePrint.append("P");
-                    break;
-
-                case PieceType::ROOK:
-                    piecePrint.append("R");
-                    break;
-
-                case PieceType::KNIGHT:
-                    piecePrint.append("N");
-                    break;
-
-                case PieceType::BISHOP:
-                    piecePrint.append("B");
-                    break;
-
-                case PieceType::QUEEN:
-                    piecePrint.append("Q");
-                    break;
-
-                case PieceType::KING:
-                    piecePrint.append("K");
-                    break;
-
-                case PieceType::BLANK:
-                    piecePrint = "   ";
-                    break;
-
-                default:
-                    break;
-            }
-
-            switch (p.id)
-            {
-                case 'b':
-                    break;
-
-                default:
-                    piecePrint += p.id;
-                    break;
-            }
-
+            std::string piecePrint = convertPieceToText(p);
             std::cout << "[" << piecePrint << "]";
         }
         std::cout << std::endl;
@@ -191,7 +134,71 @@ std::string ChessUI::convertCoordToText(Coord c) const
         coordText += static_cast<char>(c.col + 'a');
         coordText += static_cast<char>('8' - c.row);
     }
+    else
+    {
+        return "ER";
+    }
     return coordText;
+}
+
+std::string ChessUI::convertPieceToText(const Piece p) const
+{
+    std::string piecePrint;
+
+    if (p.t == PieceType::ERROR)
+        return "ERR";
+
+    if (p.t == PieceType::BLANK)
+        return "   ";
+
+    switch (p.c)
+    {
+        case Color::WHITE:
+            piecePrint.append("W");
+            break;
+
+        case Color::BLACK:
+            piecePrint.append("B");
+            break;
+
+        default:
+            break;
+    }
+
+    switch (p.t)
+    {
+        case PieceType::PAWN:
+            piecePrint.append("P");
+            break;
+
+        case PieceType::ROOK:
+            piecePrint.append("R");
+            break;
+
+        case PieceType::KNIGHT:
+            piecePrint.append("N");
+            break;
+
+        case PieceType::BISHOP:
+            piecePrint.append("B");
+            break;
+
+        case PieceType::QUEEN:
+            piecePrint.append("Q");
+            break;
+
+        case PieceType::KING:
+            piecePrint.append("K");
+            break;
+
+        default:
+            break;
+    }
+
+    // Simple ID logic
+    piecePrint += p.id;
+
+    return piecePrint;
 }
 
 void ChessUI::printMoves(const std::array<Coord, 27> &posb) const
@@ -202,7 +209,8 @@ void ChessUI::printMoves(const std::array<Coord, 27> &posb) const
         if (isValidCoord(posb[i]))
         {
             std::cout << convertCoordToText(posb[i]) << " ";
-        } else
+        }
+        else
         {
             if (i > 0)
                 std::cout << std::endl;

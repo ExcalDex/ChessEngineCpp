@@ -38,6 +38,9 @@ void Board::setPiece(const Coord at, const Piece p)
 
 Coord Board::getCoordinates(const Piece p) const
 {
+    if (p.t == PieceType::ERROR || p.t == PieceType::BLANK)
+        return Coord{8, 8};
+
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
