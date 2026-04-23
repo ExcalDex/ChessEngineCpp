@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "core/Game.hpp"
 #include "core/Board.hpp"
 #include "core/Common.hpp"
@@ -200,11 +202,61 @@ std::array<std::array<Piece, 8>, 8> FEN_to_matrix(std::string fen)
     return matrix;
 }
 
+// Helper function to validate the array of possible moves the Game class returns.
+// ASSUMES the number of valid moves in the `moves` array matches the size of the `expected` array.
+// Returns true when the generated moves match the expected ones.
+// Returns false otherwise.
+template<size_t N>
+bool validateMoves(const std::array<Coord, 27> &moves, const std::array<Coord, N> &expected)
+{
+    int countMoves = 0;
+    for (int i = 0; i < 27; i++)
+    {
+        if (moves[i] != Coord{8, 8})
+            countMoves++;
+    }
+    if (countMoves != N)
+    {
+        return false;
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        bool foundMatch = false;
+        for (int j = 0; j < 27; j++)
+        {
+            if (moves[j] == expected[i])
+            {
+                foundMatch = true;
+                break;
+            }
+        }
+        if (!foundMatch)
+            return false;
+    }
+
+    return true;
+}
+
+// Helper function to be able to see the moves generated with g.possibleMoves() better.
+// Used only while building the test routine, for debugging. Isn't actually used for the test units.
+void viewMoves(const std::array<Coord, 27> &posb)
+{
+    for (int i = 0; i < 27; i++)
+    {
+        if (posb[i] == Coord{8, 8})
+            break;
+        std::cout << posb[i].row << " " << posb[i].col << std::endl;
+    }
+}
+
 int main()
 {
     std::cout << "Starting test routine..." << std::endl;
     int ERROR_COUNT = 0;
     GameState defaultGameState;
+    constexpr Coord defaultBlackKing = Coord{0, 4};
+    constexpr Coord defaultWhiteKing = Coord{7, 4};
     defaultGameState.turn = Color::WHITE;
     for (int i = 0; i < 2; i++)
         for (int j = 0; j < 2; j++)
@@ -526,7 +578,7 @@ int main()
     b.setMatrix(matrixSetText);
 
     // ASSUMES b.snapshot() works. It's a base get method with a different name, returns a copy of the board matrix.
-    SnapShot snapMatrixSet = SnapShot{b.snapshot(), defaultGameState};
+    SnapShot snapMatrixSet = SnapShot{b.snapshot(), defaultGameState, defaultBlackKing, defaultWhiteKing};
 
     std::string fenSetMatrix = FEN_notation_generator(snapMatrixSet);
     if (fenSetMatrix == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -")
@@ -625,6 +677,9 @@ int main()
     movingOnBoard.board = b.snapshot();
     movingOnBoard.state = gameSMoveOnBoard;
 
+    movingOnBoard.blackKing = defaultBlackKing;
+    movingOnBoard.whiteKing = defaultWhiteKing;
+
     std::string fenMove = FEN_notation_generator(movingOnBoard);
     if (fenMove == "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3")
     {
@@ -690,33 +745,42 @@ int main()
     std::cout << "    Pawn movement generator:" << std::endl;
     SnapShot testSnap;
     GameState testState = defaultGameState;
+    testSnap.blackKing = Coord{8, 8};
+    testSnap.whiteKing = Coord{8, 8};
+    // Pawn Routine
+    // Test for single movement in row.
+    // White
+    // Pawn Routine
     // Test for single movement in row.
     // White
     testSnap.board = FEN_to_matrix("8/8/8/8/4P3/8/8/8");
     testSnap.state.turn = Color::WHITE;
     g.revertState(testSnap);
-    std::array<Coord, 27> posb = g.possibleMoves(Coord{4, 4});
-    if (posb[0] == Coord{3, 4} && posb[1] == Coord{8, 8})
+
+    std::array<Coord, 1> singleMovePawn = {Coord{3, 4}};
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), singleMovePawn))
     {
-        std::cout << "        SUCCESS on case 1." << std::endl;
+        std::cout << "        SUCCESS on case 3." << std::endl;
     }
     else
     {
-        std::cout << "        ERROR on case 1." << std::endl;
+        std::cout << "        ERROR on case 3." << std::endl;
         ERROR_COUNT++;
     }
+
     // Black
     testSnap.board = FEN_to_matrix("8/8/8/3p4/8/8/8/8");
     testSnap.state.turn = Color::BLACK;
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{3, 3});
-    if (posb[0] == Coord{4, 3} && posb[1] == Coord{8, 8})
+
+    singleMovePawn[0] = Coord{4, 3};
+    if (validateMoves(g.possibleMoves(Coord{3, 3}), singleMovePawn))
     {
-        std::cout << "        SUCCESS on case 2." << std::endl;
+        std::cout << "        SUCCESS on case 3." << std::endl;
     }
     else
     {
-        std::cout << "        ERROR on case 2." << std::endl;
+        std::cout << "        ERROR on case 3." << std::endl;
         ERROR_COUNT++;
     }
 
@@ -725,8 +789,8 @@ int main()
     testSnap.board = FEN_to_matrix("8/8/8/8/8/8/4P3/8");
     testSnap.state.turn = Color::WHITE;
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{6, 4});
-    if (posb[1] == Coord{4, 4} && posb[2] == Coord{8, 8})
+    std::array<Coord, 2> doubleMovePawn = {Coord{5, 4}, Coord{4, 4}};
+    if (validateMoves(g.possibleMoves(Coord{6, 4}), doubleMovePawn))
     {
         std::cout << "        SUCCESS on case 3." << std::endl;
     }
@@ -738,9 +802,9 @@ int main()
     // Black
     testSnap.board = FEN_to_matrix("8/4p3/8/8/8/8/8/8");
     testSnap.state.turn = Color::BLACK;
+    doubleMovePawn = {Coord{2, 4}, Coord{3, 4}};
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{1, 4});
-    if (posb[1] == Coord{3, 4} && posb[2] == Coord{8, 8})
+    if (validateMoves(g.possibleMoves(Coord{1, 4}), doubleMovePawn))
     {
         std::cout << "        SUCCESS on case 4." << std::endl;
     }
@@ -755,8 +819,8 @@ int main()
     testSnap.board = FEN_to_matrix("8/8/8/2p1p3/3P4/8/8/8");
     testSnap.state.turn = Color::WHITE;
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{4, 3});
-    if (posb[1] == Coord{3, 2} && posb[2] == Coord{3, 4} && posb[3] == Coord{8, 8})
+    std::array<Coord, 3> tripleMovePawn = {Coord{3, 2}, Coord{3, 3}, Coord{3, 4}};
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), tripleMovePawn))
     {
         std::cout << "        SUCCESS on case 5." << std::endl;
     }
@@ -769,8 +833,8 @@ int main()
     testSnap.board = FEN_to_matrix("8/8/8/3p4/2P1P3/8/8/8");
     testSnap.state.turn = Color::BLACK;
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{3, 3});
-    if (posb[1] == Coord{4, 4} && posb[2] == Coord{4, 2} && posb[3] == Coord{8, 8})
+    tripleMovePawn = {Coord{4, 2}, Coord{4, 3}, Coord{4, 4}};
+    if (validateMoves(g.possibleMoves(Coord{3, 3}), tripleMovePawn))
     {
         std::cout << "        SUCCESS on case 6." << std::endl;
     }
@@ -786,8 +850,8 @@ int main()
     testSnap.state.turn = Color::WHITE;
     testSnap.state.enPassant = Coord{2, 3};
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{3, 4});
-    if (posb[1] == Coord{2, 3} && posb[2] == Coord{8, 8})
+    doubleMovePawn = {Coord{2, 4}, Coord{2, 3}};
+    if (validateMoves(g.possibleMoves(Coord{3, 4}), doubleMovePawn))
     {
         std::cout << "        SUCCESS on case 7." << std::endl;
     }
@@ -796,19 +860,60 @@ int main()
         std::cout << "        ERROR on case 7." << std::endl;
         ERROR_COUNT++;
     }
-    // Back
+    // Black
     testSnap.board = FEN_to_matrix("8/8/8/8/3pP3/8/8/8");
     testSnap.state.turn = Color::BLACK;
     testSnap.state.enPassant = Coord{5, 4};
     g.revertState(testSnap);
-    posb = g.possibleMoves(Coord{4, 3});
-    if (posb[1] == Coord{5, 4} && posb[2] == Coord{8, 8})
+    doubleMovePawn = {Coord{5, 3}, Coord{5, 4}};
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), doubleMovePawn))
     {
         std::cout << "        SUCCESS on case 8." << std::endl;
     }
     else
     {
         std::cout << "        ERROR on case 8." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Rook Routine
+    // White
+    std::cout << "    Rook movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("4n3/8/8/8/1q2RB2/8/8/4P3");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    std::array<Coord, 9> expectedWhiteRook = {
+            Coord{4, 3}, Coord{4, 2}, Coord{4, 1}, // Left
+            Coord{3, 4}, Coord{2, 4}, Coord{1, 4}, Coord{0, 4}, // Up
+            Coord{5, 4}, Coord{6, 4} // Down
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedWhiteRook))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Black
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("4N3/8/8/8/1Q2rb2/8/8/4p3");
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    std::array<Coord, 9> expectedBlackRook = {
+        Coord{4, 3}, Coord{4, 2}, Coord{4, 1}, // Left
+        Coord{3, 4}, Coord{2, 4}, Coord{1, 4}, Coord{0, 4}, // Up
+        Coord{5, 4}, Coord{6, 4} // Down
+    };
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedWhiteRook))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
         ERROR_COUNT++;
     }
 
