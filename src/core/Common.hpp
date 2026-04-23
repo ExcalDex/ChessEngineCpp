@@ -46,6 +46,8 @@ struct SnapShot
 {
     std::array<std::array<Piece, 8>, 8> board;
     GameState state;
+    Coord blackKing;
+    Coord whiteKing;
 };
 
 // Checks if Coordinate is not out of bounds.
