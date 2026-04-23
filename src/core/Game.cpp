@@ -212,6 +212,7 @@ std::array<Coord, 27> Game::rookMoves(Coord p) const
                 {
                     arr[k] = currentMove;
                     k++;
+                    break;
                 }
                 else
                     break;
@@ -256,6 +257,7 @@ std::array<Coord, 27> Game::bishopMoves(Coord p) const
                 {
                     arr[k] = currentMove;
                     k++;
+                    break;
                 }
                 else
                     break;
@@ -571,6 +573,8 @@ void Game::revertState(const SnapShot &snap)
 {
     gameState = snap.state;
     board.setMatrix(snap.board);
+    blackKing = snap.blackKing;
+    whiteKing = snap.whiteKing;
 }
 
 bool Game::isKingInCheck(Color c)
