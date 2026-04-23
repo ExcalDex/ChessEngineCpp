@@ -708,7 +708,7 @@ void Game::undo()
 
 SnapShot Game::getSnap() const
 {
-    return SnapShot{board.snapshot(), gameState};
+    return SnapShot{board.snapshot(), gameState, blackKing, whiteKing};
 }
 
 std::stack<SnapShot> Game::getHistory() const
