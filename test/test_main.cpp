@@ -212,7 +212,7 @@ bool validateMoves(const std::array<Coord, 27> &moves, const std::array<Coord, N
     int countMoves = 0;
     for (int i = 0; i < 27; i++)
     {
-        if (moves[i] != Coord{8, 8})
+        if (isValidCoord(moves[i]))
             countMoves++;
     }
     if (countMoves != N)
@@ -254,14 +254,10 @@ int main()
 {
     std::cout << "Starting test routine..." << std::endl;
     int ERROR_COUNT = 0;
-    GameState defaultGameState;
+
+    constexpr GameState defaultGameState = GameState{Color::WHITE, {{true, true}, {true, true}}, Coord{8, 8}};
     constexpr Coord defaultBlackKing = Coord{0, 4};
     constexpr Coord defaultWhiteKing = Coord{7, 4};
-    defaultGameState.turn = Color::WHITE;
-    for (int i = 0; i < 2; i++)
-        for (int j = 0; j < 2; j++)
-            defaultGameState.castling[i][j] = true;
-    defaultGameState.enPassant = Coord{8, 8};
 
     std::cout << "Common Operations test routine:" << std::endl;
     std::cout << "    Coordinate validation basic function:" << std::endl;
@@ -876,6 +872,77 @@ int main()
         ERROR_COUNT++;
     }
 
+    // Knight Routine
+    // White
+    std::cout << "    Knight movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("N6N/8/8/8/3N4/8/8/N6N");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    constexpr Coord upperLeftCorner = {0, 0};
+    constexpr Coord upperRightCorner = {0, 7};
+    constexpr Coord lowerLeftCorner = {7, 0};
+    constexpr Coord lowerRightCorner = {7, 7};
+
+    std::array<Coord, 2> expectedWhiteKnightCorners = {Coord{2, 1}, Coord{1, 2}};
+    if (validateMoves(g.possibleMoves(upperLeftCorner), expectedWhiteKnightCorners))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    expectedWhiteKnightCorners = {Coord{2, 6}, Coord{1, 5}};
+    if (validateMoves(g.possibleMoves(upperRightCorner), expectedWhiteKnightCorners))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    expectedWhiteKnightCorners = {Coord{5, 1}, Coord{6, 2}};
+    if (validateMoves(g.possibleMoves(lowerLeftCorner), expectedWhiteKnightCorners))
+    {
+        std::cout << "        SUCCESS on case 3." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 3." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    expectedWhiteKnightCorners = {Coord{5, 6}, Coord{6, 5}};
+    if (validateMoves(g.possibleMoves(lowerRightCorner), expectedWhiteKnightCorners))
+    {
+        std::cout << "        SUCCESS on case 4." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 4." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    std::array<Coord, 8> expectedWhiteKnightCenter = {
+            Coord{2, 4}, Coord{6, 4},
+            Coord{2, 2}, Coord{6, 2},
+            Coord{5, 1}, Coord{5, 5},
+            Coord{3, 1}, Coord{3, 5}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedWhiteKnightCenter))
+    {
+        std::cout << "        SUCCESS on case 5." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 5." << std::endl;
+        ERROR_COUNT++;
+    }
+
     // Rook Routine
     // White
     std::cout << "    Rook movement generator:" << std::endl;
@@ -903,11 +970,52 @@ int main()
     testSnap.state.turn = Color::BLACK;
     g.revertState(testSnap);
     std::array<Coord, 9> expectedBlackRook = {
-        Coord{4, 3}, Coord{4, 2}, Coord{4, 1}, // Left
-        Coord{3, 4}, Coord{2, 4}, Coord{1, 4}, Coord{0, 4}, // Up
-        Coord{5, 4}, Coord{6, 4} // Down
-    };
-    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedWhiteRook))
+            Coord{4, 3}, Coord{4, 2}, Coord{4, 1}, // Left
+            Coord{3, 4}, Coord{2, 4}, Coord{1, 4}, Coord{0, 4}, // Up
+            Coord{5, 4}, Coord{6, 4} // Down
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedBlackRook))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Bishop Routine
+    // White
+    std::cout << "    Bishop movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/1p5/4P3/3B4/2p5/8/6P1");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    std::array<Coord, 5> expectedWhiteBishop = {
+            Coord{3, 2}, Coord{2, 1}, // North-West
+            Coord{5, 4}, Coord{6, 5}, // South-East
+            Coord{5, 2} // South-WEST
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedWhiteBishop))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Black
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/1P5/4p3/3b4/2P5/8/6p1");
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    std::array<Coord, 5> expectedBlackBishop = {
+            Coord{3, 2}, Coord{2, 1}, // North-West
+            Coord{5, 4}, Coord{6, 5}, // South-East
+            Coord{5, 2} // South-WEST
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedBlackBishop))
     {
         std::cout << "        SUCCESS on case 2." << std::endl;
     }
