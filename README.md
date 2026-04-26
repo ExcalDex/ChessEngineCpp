@@ -1,6 +1,7 @@
 # Chess Engine
 [![Tests](https://github.com/andresgcsdev/ChessEngineCpp/actions/workflows/test.yml/badge.svg)](https://github.com/ExcalDex/ChessEngineCpp/actions)
 
+
 A C++ chess engine featuring a fully functional game implementation with AI opponent powered by minimax search with position evaluation.
 
 ---
