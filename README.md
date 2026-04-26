@@ -1,4 +1,5 @@
 # Chess Engine
+[![Tests](https://github.com/andresgcsdev/ChessEngineCpp/actions/workflows/test.yml/badge.svg)](https://github.com/ExcalDex/ChessEngineCpp/actions)
 
 A C++ chess engine featuring a fully functional game implementation with AI opponent powered by minimax search with position evaluation.
 
@@ -60,8 +61,8 @@ Comprehensive unit test suite covering:
 ### Run Tests
 
 ```bash
-cmake --build cmake-build-debug --target chess_test
-./cmake-build-debug/chess_test
+cmake --build build --target chess_test
+./build/chess_test
 ```
 
 ### Test Infrastructure
