@@ -246,7 +246,7 @@ void viewMoves(const std::array<Coord, 27> &posb)
     {
         if (posb[i] == Coord{8, 8})
             break;
-        std::cout << posb[i].row << " " << posb[i].col << std::endl;
+        std::cout << "Coord{" << posb[i].row << ", " << posb[i].col << "}," << std::endl;
     }
 }
 
@@ -738,14 +738,40 @@ int main()
     std::cout << "Game test routine:" << std::endl;
     Game g;
     std::cout << "    Game instance initialized." << std::endl;
-    std::cout << "    Pawn movement generator:" << std::endl;
+    std::cout << "    SnapShot setter:" << std::endl;
     SnapShot testSnap;
-    GameState testState = defaultGameState;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    g.revertState(testSnap);
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -")
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    testSnap.state.turn = Color::BLACK;
+    testSnap.state.enPassant = Coord{5, 4};
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
+    g.revertState(testSnap);
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3")
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    std::cout << "    Pawn movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
     testSnap.blackKing = Coord{8, 8};
     testSnap.whiteKing = Coord{8, 8};
-    // Pawn Routine
-    // Test for single movement in row.
-    // White
     // Pawn Routine
     // Test for single movement in row.
     // White
@@ -756,11 +782,11 @@ int main()
     std::array<Coord, 1> singleMovePawn = {Coord{3, 4}};
     if (validateMoves(g.possibleMoves(Coord{4, 4}), singleMovePawn))
     {
-        std::cout << "        SUCCESS on case 3." << std::endl;
+        std::cout << "        SUCCESS on case 1." << std::endl;
     }
     else
     {
-        std::cout << "        ERROR on case 3." << std::endl;
+        std::cout << "        ERROR on case 1." << std::endl;
         ERROR_COUNT++;
     }
 
@@ -772,11 +798,11 @@ int main()
     singleMovePawn[0] = Coord{4, 3};
     if (validateMoves(g.possibleMoves(Coord{3, 3}), singleMovePawn))
     {
-        std::cout << "        SUCCESS on case 3." << std::endl;
+        std::cout << "        SUCCESS on case 2." << std::endl;
     }
     else
     {
-        std::cout << "        ERROR on case 3." << std::endl;
+        std::cout << "        ERROR on case 2." << std::endl;
         ERROR_COUNT++;
     }
 
@@ -1025,8 +1051,837 @@ int main()
         ERROR_COUNT++;
     }
 
+    // Queen routine
+    // White
+    std::cout << "    Queen movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/1p5/4P3/3Q4/2p5/8/6P1");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    std::array<Coord, 19> expectedWhiteQueenDiagonal = {
+            Coord{5, 3}, Coord{6, 3}, Coord{7, 3},
+            Coord{3, 3}, Coord{2, 3}, Coord{1, 3},
+            Coord{0, 3}, Coord{4, 4}, Coord{4, 5},
+            Coord{4, 6}, Coord{4, 7}, Coord{4, 2},
+            Coord{4, 1}, Coord{4, 0}, Coord{5, 4},
+            Coord{6, 5}, Coord{5, 2}, Coord{3, 2},
+            Coord{2, 1}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedWhiteQueenDiagonal))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/1P5/4p3/3q4/2P5/8/6p1");
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    std::array<Coord, 19> expectedBlackQueenDiagonal = {
+            Coord{5, 3}, Coord{6, 3}, Coord{7, 3},
+            Coord{3, 3}, Coord{2, 3}, Coord{1, 3},
+            Coord{0, 3}, Coord{4, 4}, Coord{4, 5},
+            Coord{4, 6}, Coord{4, 7}, Coord{4, 2},
+            Coord{4, 1}, Coord{4, 0}, Coord{5, 4},
+            Coord{6, 5}, Coord{5, 2}, Coord{3, 2},
+            Coord{2, 1}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedBlackQueenDiagonal))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("4n3/8/8/8/1q2QB2/8/8/4P3");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    std::array<Coord, 22> expectedWhiteQueenOrthogonal = {
+            Coord{5, 4}, Coord{6, 4}, Coord{3, 4}, Coord{2, 4},
+            Coord{1, 4}, Coord{0, 4}, Coord{4, 3}, Coord{4, 2},
+            Coord{4, 1}, Coord{5, 5}, Coord{6, 6}, Coord{7, 7},
+            Coord{3, 5}, Coord{2, 6}, Coord{1, 7}, Coord{5, 3},
+            Coord{6, 2}, Coord{7, 1}, Coord{3, 3}, Coord{2, 2},
+            Coord{1, 1}, Coord{0, 0}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedWhiteQueenOrthogonal))
+    {
+        std::cout << "        SUCCESS on case 3." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 3." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("4N3/8/8/8/1Q2qb2/8/8/4p3");
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    std::array<Coord, 22> expectedBlackQueenOrthogonal = {
+            Coord{5, 4}, Coord{6, 4}, Coord{3, 4}, Coord{2, 4},
+            Coord{1, 4}, Coord{0, 4}, Coord{4, 3}, Coord{4, 2},
+            Coord{4, 1}, Coord{5, 5}, Coord{6, 6}, Coord{7, 7},
+            Coord{3, 5}, Coord{2, 6}, Coord{1, 7}, Coord{5, 3},
+            Coord{6, 2}, Coord{7, 1}, Coord{3, 3}, Coord{2, 2},
+            Coord{1, 1}, Coord{0, 0}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 4}), expectedWhiteQueenOrthogonal))
+    {
+        std::cout << "        SUCCESS on case 4." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 4." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // King routine
+    // White
+    std::cout << "    King movement generator:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/4P3/8/8");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    std::array<Coord, 9> expectedWhiteKing = {
+            Coord{5, 3}, Coord{5, 2}, Coord{3, 3}, Coord{3, 4},
+            Coord{3, 2}, Coord{4, 4}, Coord{4, 2}, Coord{4, 1}, Coord{4, 5}
+            };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedWhiteKing))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("8/8/8/8/3k4/4p3/8/8");
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    std::array<Coord, 9> expectedBlackKing = {
+        Coord{5, 3}, Coord{5, 2}, Coord{3, 3}, Coord{3, 4},
+        Coord{3, 2}, Coord{4, 4}, Coord{4, 2}, Coord{4, 1}, Coord{4, 5}
+    };
+    if (validateMoves(g.possibleMoves(Coord{4, 3}), expectedBlackKing))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Check routine
+    std::cout << "    King in check:" << std::endl;
+    //  White
+    testSnap.state = defaultGameState;
+    testSnap.blackKing = Coord{8, 8};
+    testSnap.whiteKing = Coord{4, 3};
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
+            testSnap.state.castling[i][j] = false;
+    // Test for false positive
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Rook
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/3r4");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K3r/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 3." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 3." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/r2K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 4." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 4." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("3r4/8/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 5." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 5." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for false positive
+    testSnap.board = FEN_to_matrix("3r4/8/8/3R4/r1RKR2r/3R4/8/3r4");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 6." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 6." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Bishop
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/6b1");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 7." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 7." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/b7");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 8." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 8." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/b7/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 9." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 9." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/6b1/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 10." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 10." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for false positive
+    testSnap.board = FEN_to_matrix("8/b5b1/8/2B1B3/3K4/2B1B3/8/b5b1");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 11." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 11." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Queen
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/3q4");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 12." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 12." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K3q/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 13." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 13." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/q2K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 14." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 14." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("3q4/8/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 15." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 15." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for false positive
+    testSnap.board = FEN_to_matrix("3q4/8/8/3Q4/q1QKQ2q/3Q4/8/3q4");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 16." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 16." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/6q1");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 17." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 17." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/8/q7");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 18." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 18." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/q7/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 19." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 19." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/6q1/8/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 20." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 20." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for false positive
+    testSnap.board = FEN_to_matrix("8/q5q1/8/2Q1Q3/3K4/2Q1Q3/8/q5q1");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 21." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 21." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Knight
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/4n3/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 22." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 22." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/5n2/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 23." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 23." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/8/2n5/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 24." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 24." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/1n6/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 25." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 25." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/1n6/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 26." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 26." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/2n5/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 27." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 27." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/4n3/8/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 28." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 28." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/5n2/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 29." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 29." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Pawn
+    testSnap.board = FEN_to_matrix("8/8/8/4p3/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 30." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 30." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/2p5/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 31." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 31." << std::endl;
+        ERROR_COUNT++;
+    }
+    // King
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/4k3/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 32." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 32." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/3k4/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 33." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 33." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3K4/2k5/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 34." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 34." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/2kK4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 35." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 35." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/2k5/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 36." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 36." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/3k4/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 37." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 37." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/4k3/3K4/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 38." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 38." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3Kk3/8/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 39." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 39." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Black
+    testSnap.whiteKing = Coord{8, 8};
+    testSnap.blackKing = Coord{4, 3};
+    testSnap.board = FEN_to_matrix("8/8/8/8/3k4/4P3/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 40." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 40." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3k4/2P5/8/8");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 41." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 41." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3k4/8/8/3Q4");
+    g.revertState(testSnap);
+    if (g.isKingInCheck(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 42." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 42." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("8/8/8/8/3k4/3q4/8/3Q4");
+    g.revertState(testSnap);
+    if (!g.isKingInCheck(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 43." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 43." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Executing moves
+    std::cout << "    Move applier:" << std::endl;
+    testSnap.state = defaultGameState;
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    g.revertState(testSnap);
+    g.applyMove(Coord{6, 4}, Coord{4, 4});
+    // General test + en passant
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3")
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    g.revertState(testSnap);
+    g.makeMove(Coord{6, 4}, Coord{4, 4});
+    // Testing if makeMove() has same result
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3")
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+    g.undo();
+    // Testing if undo() works after makeMove()
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -")
+    {
+        std::cout << "        SUCCESS on case 3." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 3." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for castling queen side for white
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3KBNR");
+    g.revertState(testSnap);
+    g.applyMove(Coord{7, 4}, Coord{7, 2});
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/2KR1BNR b kq -")
+    {
+        std::cout << "        SUCCESS on case 4." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 4." << std::endl;
+        ERROR_COUNT++;
+    }
+    // King side
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R");
+    g.revertState(testSnap);
+    g.applyMove(Coord{7, 4}, Coord{7, 6});
+    if (FEN_notation_generator(g.getSnap()) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1RK1 b kq -")
+    {
+        std::cout << "        SUCCESS on case 5." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 5." << std::endl;
+        ERROR_COUNT++;
+    }
+    // Testing for castling queen side for black
+    testSnap.state.turn = Color::BLACK;
+    testSnap.board = FEN_to_matrix("r3kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    g.revertState(testSnap);
+    g.applyMove(Coord{0, 4}, Coord{0, 2});
+    if (FEN_notation_generator(g.getSnap()) == "2kr1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -")
+    {
+        std::cout << "        SUCCESS on case 6." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 6." << std::endl;
+        ERROR_COUNT++;
+    }
+    // King side
+    testSnap.board = FEN_to_matrix("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    g.revertState(testSnap);
+    g.applyMove(Coord{0, 4}, Coord{0, 6});
+    if (FEN_notation_generator(g.getSnap()) == "rnbq1rk1/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ -")
+    {
+        std::cout << "        SUCCESS on case 7." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 7." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Color has moves
+    std::cout << "    Color has moves:" << std::endl;
+    testSnap.board = FEN_to_matrix("8/8/8/8/8/8/8/8");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    if (!g.hasMoves(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    if (!g.hasMoves(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    testSnap.board = FEN_to_matrix("4k3/8/8/8/8/8/8/4K3");
+    testSnap.state.turn = Color::WHITE;
+    g.revertState(testSnap);
+    if (g.hasMoves(Color::WHITE))
+    {
+        std::cout << "        SUCCESS on case 3." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 3." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.state.turn = Color::BLACK;
+    g.revertState(testSnap);
+    if (g.hasMoves(Color::BLACK))
+    {
+        std::cout << "        SUCCESS on case 4." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 4." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    // Stalemate
+    std::cout << "    Stalemate by material:" << std::endl;
+    testSnap.board = FEN_to_matrix("4k3/8/8/8/8/8/8/4K3");
+    g.revertState(testSnap);
+    if (g.staleMateByMaterial())
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    g.revertState(testSnap);
+    if (!g.staleMateByMaterial())
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+    std::cout << "Engine test routine:" << std::endl;
+    Engine wai(Color::WHITE);
+    Engine bai(Color::BLACK);
+    std::cout << "    Engine instances initialized." << std::endl;
+    testSnap.board = FEN_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    testSnap.state = defaultGameState;
+    testSnap.blackKing = defaultBlackKing;
+    testSnap.whiteKing =defaultWhiteKing;
+    g.revertState(testSnap);
+    std::array<Coord, 2> testEngine = wai.getBestMove(g);
+    if (g.makeMove(testEngine[0], testEngine[1]))
+    {
+        std::cout << "        SUCCESS on case 1." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 1." << std::endl;
+        ERROR_COUNT++;
+    }
+    testEngine = bai.getBestMove(g);
+    if (g.makeMove(testEngine[0], testEngine[1]))
+    {
+        std::cout << "        SUCCESS on case 2." << std::endl;
+    }
+    else
+    {
+        std::cout << "        ERROR on case 2." << std::endl;
+        ERROR_COUNT++;
+    }
+
+
     std::cout << "================================" << std::endl;
-    std::cout << "Test Summary: " << ERROR_COUNT << " error(s)" << std::endl;
+    std::cout << "Test Summary: " << ERROR_COUNT << " error(s) out of 174 tests" << std::endl;
     if (ERROR_COUNT == 0)
         std::cout << "All systems nominal. You don't need to thank me." << std::endl;
     else
