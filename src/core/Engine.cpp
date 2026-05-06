@@ -37,7 +37,7 @@ std::array<Coord, 2> Engine::getBestMove(Game game)
 
                     SnapShot snap = game.getSnap();
                     game.applyMove(currentPiece, posb[k]);
-                    int minimaxVal = minimax(game, SEARCH_DEPTH);
+                    int minimaxVal = minimax(game, SEARCH_DEPTH, INT_MIN, INT_MAX);
                     game.revertState(snap);
 
                     if (minimaxVal > max)
@@ -54,7 +54,7 @@ std::array<Coord, 2> Engine::getBestMove(Game game)
     return {fromMax, toMax};
 }
 
-int Engine::minimax(Game &game, int depth)
+int Engine::minimax(Game &game, int depth, int alpha, int beta)
 {
     if (depth == 0)
         return evaluate(game);
@@ -78,13 +78,23 @@ int Engine::minimax(Game &game, int depth)
 
                 SnapShot snap = game.getSnap();
                 game.applyMove(from, posb[k]);
-                int score = minimax(game, depth - 1);
+                int score = minimax(game, depth - 1, alpha, beta);
                 game.revertState(snap);
 
                 if (isMaximizing)
+                {
                     bestScore = std::max(bestScore, score);
+                    alpha = std::max(alpha, bestScore);
+                    if (beta <= alpha)
+                        break;
+                }
                 else
+                {
                     bestScore = std::min(bestScore, score);
+                    beta = std::min(beta, bestScore);
+                    if (beta <= alpha)
+                        break;
+                }
             }
         }
     }
@@ -200,7 +210,10 @@ int Engine::evaluate(Game &game) const
                         val *= -whiteMultiplr;
                     break;
                 case PieceType::KING:
-                    val += kingTable[fixedRow][col];
+                    if (isEndgame(game))
+                        val += kingEndgameTable[fixedRow][col];
+                    else
+                        val += kingTable[fixedRow][col];
 
                     if (p.c == Color::WHITE)
                         val *= whiteMultiplr;

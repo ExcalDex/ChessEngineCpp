@@ -20,7 +20,7 @@ public:
     std::array<Coord, 2> getBestMove(Game game);
 
 private:
-    static constexpr int SEARCH_DEPTH = 2;
+    static constexpr int SEARCH_DEPTH = 4;
     Color selfColor;
     // All position value tables
     // Pawn
@@ -115,9 +115,11 @@ private:
     static constexpr int QUEEN_VALUE = 900;
 
     // Minimax function for interation through moves.
-    int minimax(Game &game, int depth);
+    // Includes Alpha-Beta pruning.
+    int minimax(Game &game, int depth, int alpha, int beta);
 
     // Evaluation function for current board state.
+    // Evaluates for material difference and piece positions.
     int evaluate(Game &game) const;
 
     // Defines when the endgame phase starts, so the king can become more aggressive.
