@@ -9,7 +9,7 @@ A C++ chess engine featuring a fully functional game implementation with AI oppo
 ## Features
 
 - **Full Chess Rules:** Pawn promotion, castling, en passant, check/checkmate detection
-- **AI Engine:** Minimax search algorithm with piece-square table evaluation
+- **AI Engine:** Minimax search with alpha-beta pruning and piece-square table evaluation
 - **Game State Management:** Full move history with undo/revert functionality
 - **Clean Architecture:** Separation of concerns (Model, View, Controller, AI)
 
@@ -89,7 +89,7 @@ cmake --build build --target chess_test
 - Game state tracking (castling rights, en passant, turn)
 
 **Engine** (`core/Engine.hpp`):
-- Minimax search to configurable depth (default: 3)
+- Minimax search with alpha-beta pruning to configurable depth (default: 4)
 - Position evaluation using material count + piece-square tables
 - Endgame detection for king positioning adjustment
 
@@ -101,7 +101,7 @@ cmake --build build --target chess_test
 
 ## Design Decisions
 
-**Depth 3 Minimax:** Balances move quality with reasonable search time. Deeper search is possible but requires optimization (alpha-beta pruning, transposition tables).
+**Depth 4 Minimax with Alpha-Beta Pruning:** Alpha-beta pruning eliminates branches that won't affect the final decision, allowing reasonable search depth without excessive computation. Depth 4 balances move quality with search time (~10-15 seconds per move).
 
 **Piece-Square Tables:** Standard chess evaluation tables reward piece placement (e.g., pawns advancing, knights in center, kings centralizing in endgame).
 
@@ -127,17 +127,15 @@ This version is the result of all of that. Same problem, finally complete.
 
 ## Known Limitations
 
-- Search depth limited to 3 (sufficient for reasonable play, but not tournament-level)
+- Search depth limited to 4 (sufficient for reasonable play, but not tournament-level)
 - No opening book or endgame tables
 - Evaluation considers only material and position, not advanced tactics (pins, forks, etc.)
-- No alpha-beta pruning (planned for future versions)
 
 ---
 
 ## Future Improvements
 
-- Alpha-beta pruning for faster search
-- Endgame tablebases
+- GUI implementation
 
 ---
 
@@ -148,6 +146,7 @@ The engine uses a minimax algorithm with alternating maximization/minimization l
 - Engine maximizes its own position score
 - Opponent minimizes the engine's advantage (plays optimally against you)
 - Positions are evaluated at max depth; deeper moves are explored recursively
+- Alpha-beta pruning optimizes the search by skipping evaluation of branches where the opponent has already proven they have better alternatives.
 
 Position evaluation = material value + positional bonuses from piece-square tables. Checkmate returns ±∞; stalemate returns -50 (discouraged but acceptable).
 
