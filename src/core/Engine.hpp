@@ -20,7 +20,7 @@ public:
     std::array<Coord, 2> getBestMove(Game game);
 
 private:
-    static constexpr int SEARCH_DEPTH = 4;
+    static constexpr int SEARCH_DEPTH = 3;
     Color selfColor;
     // All position value tables
     // Pawn

@@ -101,7 +101,7 @@ cmake --build build --target chess_test
 
 ## Design Decisions
 
-**Depth 4 Minimax with Alpha-Beta Pruning:** Alpha-beta pruning eliminates branches that won't affect the final decision, allowing reasonable search depth without excessive computation. Depth 4 balances move quality with search time (~10-15 seconds per move).
+**Depth 3 Minimax with Alpha-Beta Pruning:** Alpha-beta pruning eliminates branches that won't affect the final decision, allowing reasonable search depth without excessive computation. Depth 3 balances move quality with search time (~3 seconds per move).
 
 **Piece-Square Tables:** Standard chess evaluation tables reward piece placement (e.g., pawns advancing, knights in center, kings centralizing in endgame).
 
@@ -127,7 +127,7 @@ This version is the result of all of that. Same problem, finally complete.
 
 ## Known Limitations
 
-- Search depth limited to 4 (sufficient for reasonable play, but not tournament-level)
+- Search depth limited to 3 (sufficient for reasonable play, but not tournament-level)
 - No opening book or endgame tables
 - Evaluation considers only material and position, not advanced tactics (pins, forks, etc.)
 
